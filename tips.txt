@@ -1,0 +1,271 @@
+
+既然你已经有nginx做⽹关了，为什么还要⽤gateWay
+1.nginx是做负载均衡，还有针对客户端的访问做⽹关⽤的
+2.gateWay是接⼊业务层做的⽹关，⽽且还整合了熔断器Hystrix
+
+
+
+分布式定时任务调度：集群环境下保证服务的唯一性，一个服务仅会被成功执行一次，一旦失败则负载到其他节点服务，提供页面监控
+	xxl-job和elastic-job
+seata：链路追踪保证事务的一致性，同时成功或失败
+nacos：Ribbon下实现简单负载，失败了也不会分配到其他节点重试
+
+
+Nacos：作为配置中心是CP作为注册中心是AP
+	健康检查：临时节点心跳注册（微服务），持久化节点tcp、http探测（mysql）
+	数据隔离：User、NameSpace、Group、Service
+
+
+dubbo的协议：
+默认走dubbo协议基，于长连接 NIO 异步通信可以支撑高并发请求，建立连接过后可以持续发送请求，无须再建立连接，还支持 hession、Java 二进制序列化、json、SOAP 文本序列化多种序列化协议
+
+dubbo的负载均衡策略，主体向外暴露出来是一个接口，名字叫做loadBlace
+Random LoadBalance：随机选取提供者策略，随机转发请求，可以加权
+RoundRobin LoadBalance：轮循选取提供者策略，请求平均分布
+LeastActive LoadBalance：最少活跃调用策略，可以让慢提供者接收更少的请求
+ConstantHash LoadBalance：一致性 Hash策略，相同参数请求总是发到同一提供者，
+	一台机器宕机，可以基于虚拟节点，分摊至其他提供者
+
+
+
+数据库事务ACID：原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）
+SQL标准为事务定义了不同的隔离级别，从低到高依次是：
+	读未提交（READ UNCOMMITTED）最低级别，会读取到其他事务未提交的数据：脏读
+	读已提交（READ COMMITTED）事务过程中可以读取其他事务已提交的数据：不可重复读
+	可重复读（REPEATABLE READ）可避免脏读、不可重复读情况的发生，不管是否提交每次读取相同的结果：幻读
+	串行化（SERIALIZABLE）可避免脏读、不可重复读、幻读情况的发生
+	事务的隔离级别越低，可能出现的并发异常越多，但是通常而言系统能提供的并发能力越强
+脏读指一个事务读取了另外一个事务未提交的数据
+不可重复读指在一个事务内读取表中的某一行数据，多次读取结果不同（重新读取了前一事务已提交的数据）
+虚读（幻读）是指在一个事务内读取到了别的事务插入的数据，导致前后读取不一致
+
+MySQL、PG区别：
+mysql数据存储结构为聚簇索引，通过主键查询效率较高，不太适合超大数据非主键查询;pg采用堆表存储数据，能够支持更大的数据量
+物理同步可靠性更高，复制性能更高mysql适用应用逻辑简单，轻数据存储和计算的场景，pg适合复杂的数据分析和特殊应用场景
+
+
+Kafka：高性能、RocketMQ：业务性、RabbitMQ：高可靠
+
+
+设计模式应用的场景
+
+sevlet、过滤器、拦截器、controller
+rpc调用a-》b，b超时b知道么，b怎么办，a怎么办（幂等性）
+JVM调优目的：减小响应时间、提高吞吐量
+
+
+红黑树的高度：2log（n+1）
+jvm结构
+gc回收算法
+OOP，用的什么场景
+高并发应当注意什么
+过滤器是一个程序，它先于与之相关的servlet或JSP页面运行在服务器上并且可以检查进入这些资源的请求信息
+拦截器，在AOP 中用于在某个方法或字段被访问之前，进行拦截然后在之前或之后加入某些操作。
+Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏览器或其他 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层。
+使用 Servlet，可以收集来自网页表单的用户输入，呈现来自数据库或者其他源的记录，还可以动态创建网页
+sentinel配置
+
+mysql任务计划：
+全局处理异常配置
+线程池原里，过程
+
+mybatis的预编译防止sql注入
+cg算法怎么进行垃圾回收
+cpu超过80%怎么办
+Arthas阿里巴巴开源的 Java 诊断工具
+分布式锁及数据一致性：https：//blog.csdn.net/weixin_45716265/article/details/115021641
+
+
+
+抽象类、接口
+  抽象类的设计目的是代码复用
+  接口的设计目的，是对类的行为进行约束。
+模板的设计模式
+  功能内部一部分实现是确定的,一部分实现是不确定的。这时可以把不确定的部分暴露出去，让子类去实现。
+  子类在抽象类的基础上进行扩展、改造，但子类总体上会保留抽象类的行为方式。
+拦截器、过滤器
+  拦截器Interceptor:请求进行的时候希望干预它的进展、在它执行前后进行相关处理，这是拦截器做的事情
+    权限检查、日志记录、性能监控
+  过滤器Filter:访问后台请求或者静态资源文件时，提前过滤掉一些信息，或者提前设置一些参数
+    过滤敏感词汇、修改字符编码
+  拦截器是面向切面的一种实现,功能更强，Filter能做的事情他都能做，而且可以在请求前，请求后执行，比较灵活
+dockerfile
+  FROM ubuntu:14.04 //基础镜像
+  ADD run.sh //添加文件
+  vivoLUME /data //镜像挂载路径
+  CMD ["./run.sh"] //指定镜像执行入口
+存储过程、函数区别
+  函数必须有返回值，而过程没有。
+  函数可以单独执行，而过程必须通过execute执行
+  函数可以嵌入到SQL语句中执行
+spring配置加载顺序
+  读取配置文件的顺序为：properties->yaml->yml；
+  类型相同情况下：bootstrap->application
+spring请求跨域
+  前端使用jsonp来请求
+  Controller上使用@CrossOrigin注解
+  implements WebMvcConfigurer 重写 addCorsMappings()
+    allowedOrigins("*"). //允许跨域的域名，可以用*表示允许任何域名使用
+    allowedMethods("*"). //允许任何方法（post、get等）
+    allowedHeaders("*"). //允许任何请求头
+@lazy
+  通过生成“假”代理对象的方式，阻止参与循环依赖的bean解决依赖
+深度分页的优化
+  使用 select 只查主键就不会再到聚簇索引上再查一遍，limit 在查询结果基础上就跳过了多少行次数的回表操作，根据条件查对 id进行分页，之后再通过 in 主键 id 进行需要数据的获取
+  也可以通过前端上一页最后一条数据的信息作为查询条件获取pageSize大小的偏移量，这是建立在固定排序逻辑下的，查询过程中的数据更新可能影响数据的有效性
+varchar与char有什么区别
+  char 表示定长，长度固定，varchar表示变长，即长度可变。char如果插入的长度小于定义长度时，则用空格填充；varchar小于定义长度时，还是按实际长度存储，插入多长就存多长
+  char的存取速度要比varchar要快得多，但是可能会浪费空间
+  对 char 来说，最多能存放的字符个数 255；varchar 最多能存放 65532 个字符
+
+
+mq处理重复消费问题
+  分布式锁+全局id
+ZK的选举机制：
+  目前有5台服务器，每台服务器均没有数据，它们的编号分别是1，2，3，4，5，按编号依次启动，它们的选择举过程如下：
+  服务器1启动，给自己投票，然后发投票信息，由于其它机器还没有启动所以它收不到反馈信息，服务器1的状态一直属于Looking(选举状态)。
+  服务器2启动，给自己投票，同时与之前启动的服务器1交换结果，由于服务器2的编号大所以服务器2胜出，但此时投票数没有大于半数，所以两个服务器的状态依然是LOOKING。
+  服务器3启动，给自己投票，同时与之前启动的服务器1，2交换信息，由于服务器3的编号最大所以服务器3胜出，此时投票数正好大于半数，所以服务器3成为领导者，服务器1，2成为小弟。
+  服务器4启动，给自己投票，同时与之前启动的服务器1，2，3交换信息，尽管服务器4的编号大，但之前服务器3已经胜出，所以服务器4只能成为小弟。
+  服务器5启动，后面的逻辑同服务器4成为小弟。
+
+pwd 显示工作路径
+ls 查看目录中的文件
+cp 复制
+mv 移动、更名
+rm 删除
+cat 查看
+tail -f 滚动查看
+find 文件搜索
+chown 改变所有者
+chmod 赋予权限
+ps -aux | grep "name"
+
+
+
+非主键索引扫描会锁几行、存储结构：住键&非主、rpc实现
+创建线程的开销主要、数据库范式
+mybatis\herbnet优劣、已经使用的类改明、pagehelper 原理、arrayList 扩容原理、
+aqs 释放锁怎么通知：https://www.jianshu.com/p/a697206f0714
+xss、avl树：最平衡
+突然cpu彪了：cpu\内存2个结合分析
+间隙锁什么情况下会被锁以及如何解决
+MVCC：一个sql一个undulog日志，行程一个版本链
+b-不用到叶子节点才获取数据相比b+更好？：b+可缓存数据提升效率、回表
+修改bean的配置时机、主键冲突为什么apo会回滚吗、zk 选举 、
+单体锁&分布式锁、延时消费队列
+nacos 服务定义、分组，名目空间，重名问题，暴露信息，集群间同步，落盘格式
+nacos&config选型优缺点、syncnised&aqs性能、thredlocal咋样就内存溢出了
+== equals()比较的是什么、springController单例会并发吗
+循环依赖3级缓存：aop问题
+消息队列顺序、防丢失、hashMAp流程、锁级别在哪些场景下、oom现场问题处理、
+Lock 和 synchronized 使用场景、内存模型JMM，三季缓存哪3级、实现aware类
+springboot启动后怎么读取一些配置
+mybatis拦截了哪些接口、lamda表达可以写循环吗
+单表操作需要加事务吗、方法faintal、static作用、jvm 调优、api网管、
+mybatisPlus多租户：https://www.jb51.net/article/210948.htm
+解决jar的冲突、数据库主从读写的配置应用、@Import、dubbo隐士传参
+条件装配@Conditional：https://www.jianshu.com/p/9c7b897f0697
+稳定性：http、rpc对，快速获取组织架构、装饰者模式、闭锁、es倒排索引
+netty
+
+
+
+
+
+
+// 5号：中电6.30(TEL)
+// 6号：用友7.30(TEL) 中软8.30(tx)
+// 7号：天才2.30(WX) 红网7.30(tx) 用友fu8.30(TEL)
+// 8号：北控4(tx) 博彦5(TEL) 博彦7.30(tx)
+// 9号：兔展3(tx) 首钢6.20(tx)
+// 10号：兔展fu3(tx)
+// 11号：中电7(TEL) 用友hr8(wx) 智谱9(tx)
+// 12号：中信7(tx) 分贝7.30(tx) 博彦复8.30(tx)
+// 13号：拓维5.30(tx) 炎黄6(tx) 金仓7(tx) 天阳8(tx)
+// 14号：软通6(tx) 掌机7(tx) 大华8(TEL:18-30)
+// 15号：3大华(TEL) 开课4(邮箱) AIA5(wx) 权大6(tx) 陌陌7(邮箱) 软通8.30(tx)
+// 16号：建信4.30(小鱼易连)
+// 17号：互智3(tx)
+// 18号：神州7(TEL) 光大8(tx)
+// 19号：天阳11(邮储TEL) 土豆1(tx) 国遥3(tx) 兆日4(tx11-22) 博彦全5(tx:15-26) 海绵考6(企业微信)
+// 20号：石化9.30(tx:19) 苔花10.30(tx) 知了视频11.30(tx) 易连达1.30(邮储TEL:18) 分时4(tx) vivo5.30(tx) 6.30(tx) 海绵fu7(企业) 宇信8.30() aaa9(TEL)
+// 21号：北交9.30(TEL) 10.30网达(tx) 苔花fu11.30(tx) 联龙2(tx) 河钢2.30(tx) 迈艾3(tx) 华信4(tx) 知了fu5(TEL) 锦智6(TEL) 先进6.30(TEL)
+22号：东润9.30(tx) 广联10(tx) vivofu10.30(TEL) tx智慧交通11(tx) 11.30HSBC(TEL) 柚子12(机英tx) 兆日fu2(tx) 分时fu3(tx) 华信fu3.30(tx) 网达fu5(tx)                        东土()
+23号：英-交付d(笔) 河马3(TEL)
+24号：铭创9.30() 河马10(TEL) 宝兰德10.30(TEL) 赛默飞2(外企医疗方向teams) 河钢3(现场) tx4-5(邮箱) 广联6(tx) 锦智fu7(tx)
+
+
+东润(15-24)
+大华(18-30):23*14
+广联(15-22)
+华信(12-20)
+锦智(14-28)
+华筑()
+盈测
+
+互智(15-22)0-20人、偶尔加班
+网达(11-18)班车、环境
+兆日(11-22)支付19*14，全额*5%，8%
+海绵(11-20)考研app：健身房+健身基金
+分时(15-25)金融、防疫物资、加班？全勤？
+苔花(16-21)18*13试用期1-2(80%)
+
+华科
+中华
+
+
+
+
+
+  hello everyone, it`s my honor to have this opportunity for a interview, I hope i can make a good performance today. Now i`ll introduce myself brifly.
+  简单介绍自己：my name is hbw im 29 years now,born in shannXi province.I was graduated from ShannXi University of Science & Technology. I have been working as a java developer for about 7 years after graduation. usually i like bodybuilding，every week twice or three times,because it`ll keep me fit and have a helithy body to working hard.and i also like teast delicious food, as alomst chineses say foodie——吃货.One day if we have a chance,we can together to try something tasty.as a java developer i usually study througt Technology Network site, such as scdn\cnblogs。according to my study i will also write my own blog artical.
+
+   Currently I am working in company named cloud-wise, mainly responsible for knowledge base platform construction, providing solutions on IT process for company products. At the same time, the product is also providing a completly lifecycle of knowledge management. providing different levels of knowledge in the company through permission management, build knowledge graph using arango database, and help users get knowledge to solve problems through similar questions they asked.
+
+  你的长期计划：as a java developer ,recently this yeays i hope to practise my persional skill deeply, and i would like to become more excellent in my persional career. usually i alos learn some Technology through Technology Network site, such as scdn cnblogs,and hope what i learned can be sued in my project.not always just simple learning but also really master zhe core skills。more time after， i probbly want do some Management works。
+
+  工作中你看重什么：As a programmer I attach more importance to the improvement of my professional skills, and hope what some of the knowledge I learned, can really be used in the actual project, while the skills used in the project is also matched with me.and
+
+  I think I`m a good team player working with other members. and finally hoping have an Opportunity to work together. That`s all Thank you.
+
+
+简单介绍自己：my name is hbw im 29 years now,born in shannXi province.I have been working as a java developer for about 7 years after graduation. usually i like bodybuilding，every week twice or three times,because it`ll keep me fit and have a helithy body to working hard.and i also like teast delicious food, as alomst chinese say foodie——吃货.One day if we have a chance,we can together to try something tasty.as a java developer i usually study througt Technology Network site, such as scdn cnblogs。according to my study i will also write my own blog artical.
+
+你的长期计划：as a java developer ,recently this yeays i hope to practise my persional skill deeply, and i would like to become more excellent in my persional career. usually i alos learn some Technology through Technology Network site, such as scdn cnblogs,and hope what i learned can be sued in my project.not always just simple learning but also really master zhe core skills。more time after， i probbly want do some Management works。
+
+工作中你看重什么：As a programmer I attach more importance to the improvement of my professional skills, and hope what some of the knowledge I learned, can really be used in the actual project, while the skills used in the project is also matched with me.and
+
+为什么你会辞职：I am currently based in Langfang and would like to return to my hometown，recently More reasons in view of the covid-19, that is also my family would like to hope.
+
+
+你的长项：i think is my learning skill.Because I used ArnangoDB for the first time in a recent project, and through my own learning and reading of the official documentation I mastered the use of this skill and got up the speed quickly to deal my daily working.
+
+为什么你决定接受这个工作：First of all, HSBC is a huge international banke company, as a large company it has a great influence, on the other hand, it brings opportunities and challenges at the same time, I also hope through this job I can have a good training of both professional skills and English communication.
+
+3个词形容自己：easy-outgoing、hard-working、frendly
+
+你的业余爱好：i like bodybuilding，every week twice or three times,because it`ll keep me fit and have a helithy body to working hard.and i also like teast delicious food, as alomst chinese say foodie——吃货
+
+你的缺点：long time no using english in my daily life,my spoken english is have regressed in some degree，but i believe and have confidence to communicate fluently with colleagues , while  As the old saying goes:Practise make perfect.
+
+工作经历：I have been working as a java developer for about 7 years after graduation.my first job is worked in xian,which is provided a tools for Huawei company,to help them test easyly in 5G moble phone tecn. my second job is working in chian rally way company,programed the system for the road bureau，Relying on 12306, the passenger ticket buying。 Currently I am working in company named cloud-wise, mainly responsible for knowledge base platform construction, providing solutions on IT process for company products.
+
+你的特点介绍：I am an optimistic, aggressive and positive person who likes to make friends with other people and enjoys new things and trying them out. Also find the enjoyment it and enrich my daily life。such as Choose coffee beans and try grinding coffee, and brew it by myself.
+
+语言、框架、工作内容、性格、springcloud、解决思路、团队管理问题，人员、技术、需求
+
+sorry this part using english probbly hard for me with perfissonal world i not been refer to yet
+
+
+
+// 20号：5：30哗啦啦（凯德） 8：00 中软（电话）
+// 21号：3：00软通（15min电话） 5：00 用友（电话1h） 7：00 58（短信拦截连接） 8：00 车好多（boss） 9：30 软告科技（电话）
+// 22号：10：30Udesk（tx会议） 1：00红枣科技（tx会议） 3：30云基（tx会议） 5：00 方舟医药（boss） 7：00 云智慧（手机） 8：00 元保数科（tx） 9：00 北京南天（tx） 9：30用友复（电话）
+// 23号：3：00 Udesk复（tx会议） 6：00 安天（电话） 7：00智齿科技（电话） 8：00十荟团（邮箱）
+// 24号：2：00 云智慧复（手机） 4：30 动动省网络（现场） 6：00中软复（tx会议） 9：00软通差（tx会议）
+// 25号：软告（见面） 5：00打扮家（现场boss地址）
+
+// 26号：10：00蔚来（tx会议） 3：00海尔（现场） 8：00去哪儿（邮箱由视频连接+笔试）
+// 27号：10：00红枣科技复（现场） 3：00ali健康（线上） 5：00思想无限（现场） 8：00软通复（tx差）
+// 28号：10：30耳湾科技（现场） 2：30思派（医药现场） 5：00去哪网复（现场邮箱） 8：00中软
