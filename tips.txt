@@ -56,7 +56,6 @@ JVM调优目的：减小响应时间、提高吞吐量
 
 红黑树的高度：2log（n+1）
 jvm结构
-gc回收算法
 OOP，用的什么场景
 高并发应当注意什么
 过滤器是一个程序，它先于与之相关的servlet或JSP页面运行在服务器上并且可以检查进入这些资源的请求信息
@@ -167,7 +166,7 @@ mybatisPlus多租户：https://www.jb51.net/article/210948.htm
 解决jar的冲突、数据库主从读写的配置应用、@Import、dubbo隐士传参
 条件装配@Conditional：https://www.jianshu.com/p/9c7b897f0697
 稳定性：http、rpc对，快速获取组织架构、装饰者模式、闭锁、es倒排索引
-netty
+netty、http&rpc区别、怎么破坏单例模式
 
 
 
@@ -189,33 +188,21 @@ netty
 // 17号：互智3(tx)
 // 18号：神州7(TEL) 光大8(tx)
 // 19号：天阳11(邮储TEL) 土豆1(tx) 国遥3(tx) 兆日4(tx11-22) 博彦全5(tx:15-26) 海绵考6(企业微信)
-// 20号：石化9.30(tx:19) 苔花10.30(tx) 知了视频11.30(tx) 易连达1.30(邮储TEL:18) 分时4(tx) vivo5.30(tx) 6.30(tx) 海绵fu7(企业) 宇信8.30() aaa9(TEL)
+// 20号：石化9.30(tx:19) 苔花10.30(tx) 知了视频11.30(tx) 易连达1.30(邮储TEL:18) 分时4(tx) vivo5.30(tx) 6.30(tx) 海绵fu7(企业) 宇信8.30()
 // 21号：北交9.30(TEL) 10.30网达(tx) 苔花fu11.30(tx) 联龙2(tx) 河钢2.30(tx) 迈艾3(tx) 华信4(tx) 知了fu5(TEL) 锦智6(TEL) 先进6.30(TEL)
-22号：东润9.30(tx) 广联10(tx) vivofu10.30(TEL) tx智慧交通11(tx) 11.30HSBC(TEL) 柚子12(机英tx) 兆日fu2(tx) 分时fu3(tx) 华信fu3.30(tx) 网达fu5(tx)                        东土()
-23号：英-交付d(笔) 河马3(TEL)
-24号：铭创9.30() 河马10(TEL) 宝兰德10.30(TEL) 赛默飞2(外企医疗方向teams) 河钢3(现场) tx4-5(邮箱) 广联6(tx) 锦智fu7(tx)
-
-
-东润(15-24)
-大华(18-30):23*14
-广联(15-22)
-华信(12-20)
-锦智(14-28)
-华筑()
-盈测
-
-互智(15-22)0-20人、偶尔加班
-网达(11-18)班车、环境
-兆日(11-22)支付19*14，全额*5%，8%
-海绵(11-20)考研app：健身房+健身基金
-分时(15-25)金融、防疫物资、加班？全勤？
-苔花(16-21)18*13试用期1-2(80%)
-
-华科
-中华
+// 22号：东润9.30(tx) 广联10(tx) vivofu10.30(TEL) tx智慧交通11(tx) 11.30HSBC(TEL) 柚子12(机英tx) 兆日fu2(tx) 华信fu3.30(tx)
+// 23号：河马3(TEL)
+// 24号：宝兰德10.30(TEL) 赛默飞2(teams) 广联fu6(tx) 锦智fu7(tx) 海康7.30(tx) txfu8(邮箱)
+// 25号：分时fu10(环普现场) 赛默飞1.30(teams) 河钢2.30(博文路现场) vivohr3.30(tx要21-22k) 海绵考4(二环财富中心现场) 东土4.45(tx) yeahmobi6(邮箱:飞书)
+// 26号：互智11(玉祥门现场)
 
 
 
+
+
+赛默飞(19+)外企医疗 不加班 老外对接?国外节日放假?
+兆日(11-22)支付19*14 全额*5%，8%
+海绵(11-20)考研app 健身房+健身基金
 
 
   hello everyone, it`s my honor to have this opportunity for a interview, I hope i can make a good performance today. Now i`ll introduce myself brifly.
@@ -255,7 +242,7 @@ netty
 
 语言、框架、工作内容、性格、springcloud、解决思路、团队管理问题，人员、技术、需求
 
-sorry this part using english probbly hard for me with perfissonal world i not been refer to yet
+sorry this part using english probbly hard for me with perfissonal worlds i not been refer to yet
 
 
 
